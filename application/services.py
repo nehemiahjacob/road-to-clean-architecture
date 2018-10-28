@@ -27,6 +27,18 @@ class AccountManager:
     
     def _perform_transaction(self, balance, option, amount):
         if option == 1:
-            return deposit(balance, amount)
+            new_balance, change = deposit(balance, amount)
+            if change == amount:
+                self.presenter.notify_no_more_deposits_allowed(change)
+            elif 0 < change < amount:
+                self.presenter.notify_account_limit_reached(change)
+            elif change == 0:
+                pass
+            else:
+                raise Exception("Unknown state!")
+            return new_balance
         elif option == 2:
-            return withdraw(balance, amount)
+            new_balance = withdraw(balance, amount)
+            if new_balance == balance:
+                self.presenter.notify_overdraw_not_allowed()
+            return new_balance

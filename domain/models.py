@@ -1,23 +1,19 @@
 def deposit(balance, amount):
     if balance >= 1000:
-        print("Account limit of $1000 has been reached! Cannot deposit any more money!")
-        print("Returned the ${}".format(amount))
+        return balance, amount
     elif balance + amount > 1000:
         difference = 1000 - balance
         assert(difference <= amount)
         balance = 1000
         change = amount - difference
-        print("You have deposited enough to reach account limit of $1000!")
-        if change:
-            print("Change of ${} returned".format(change))
-        print("Cannot exceed account limit of $1000!")
+        return balance, change
     else:
         balance += amount
+        return balance, 0
     return balance
 
 def withdraw(balance, amount):
     if balance - amount < 0:
-        print("Cannot withdraw more than your current balance!")
+        return balance
     else:
-        balance -= amount
-    return balance
+        return balance - amount

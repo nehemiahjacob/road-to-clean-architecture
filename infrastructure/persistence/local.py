@@ -33,6 +33,7 @@ class StorageCSV:
             })
 
     def update_balance(self, account_nr, balance):
+        assert(balance >= 0)
         csv_rows = []
         with open(self.filename, "r") as csv_file:
             reader = csv.DictReader(csv_file, fieldnames=self.field_names)
