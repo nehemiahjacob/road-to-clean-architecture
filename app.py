@@ -1,8 +1,17 @@
-from infrastructure.persistence import StorageCSV
+from infrastructure.persistence import StorageCSV, DatabaseStorage
+
+environment = "dev"
+# environment = "production"
 
 def main():
-    filename = "accounts.csv"
-    storage_svc = StorageCSV(filename)
+    storage_svc = None
+
+    if environment == "production":
+        conn_str = "some connstring"
+        storage_svc = DatabaseStorage(conn_str)
+    else:
+        filename = "accounts.csv"
+        storage_svc = StorageCSV(filename)
     
     account_nr = input("Please give an account nr to create a new account: ")
 
