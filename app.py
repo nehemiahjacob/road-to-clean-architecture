@@ -1,42 +1,69 @@
-from datetime import date
 import csv
 import os
+from datetime import date
 
+filename = "accounts.csv"
+file_exists = os.path.isfile(filename)
+field_names = ["account_nr", "date_opened", "balance"]
 
-def main():
-    filename = "accounts.csv"
-    file_exists = os.path.isfile(filename)
-
-    field_names = ["account_nr", "date_opened", "balance"]
+def initialize():
     with open(filename, "a") as csv_file:
         writer = csv.DictWriter(csv_file, fieldnames=field_names)
         if not file_exists:
             writer.writeheader()
-    
-    ac_nr = input("Please give an account nr to create a new account: ")
 
+def create_account(account_nr, balance):
     with open(filename, "r") as csv_file:
         reader = csv.DictReader(csv_file, fieldnames=field_names)
 
         for row in reader:
-            if row["account_nr"] == ac_nr:
+            if row["account_nr"] == account_nr:
                 raise ValueError("Account number already exists!")
 
     with open(filename, "a") as csv_file:
         writer = csv.DictWriter(csv_file, fieldnames=field_names)
 
         writer.writerow({
-            "account_nr": ac_nr,
+            "account_nr": account_nr,
             "date_opened": date.today(),
-            "balance": 0
+            "balance": balance
         })
 
-    balance = 0
+def update_balance(account_nr, balance):
+    csv_rows = []
+    with open(filename, "r") as csv_file:
+        reader = csv.DictReader(csv_file, fieldnames=field_names)
+        for row in reader:
+            if row["account_nr"] == account_nr:
+                row["balance"] = balance
+            csv_rows.append(row)
+    
+    with open(filename, "w") as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=field_names)
+        for row in csv_rows:
+            writer.writerow(row)
+
+def get_balance(account_nr):
+    with open(filename, "r") as csv_file:
+        reader = csv.DictReader(csv_file, fieldnames=field_names)
+
+        for row in reader:
+            if row["account_nr"] == account_nr:
+                balance = row["balance"]
+                return int(balance)
+
+def main():
+    initialize()
+    account_nr = input("Please give an account nr to create a new account: ")
+
+    initial_balance = 0
+    create_account(account_nr, initial_balance)
 
     while True:
         try:
+            balance = get_balance(account_nr)
             print("")
-            print("Your current balance for #{} is ${}".format(ac_nr, balance))
+            print("Your current balance for #{} is ${}".format(account_nr, balance))
             print("1) Deposit money into account")
             print("2) Withdraw money from account")
             opt = int(input("Choose option: "))
@@ -70,18 +97,7 @@ def main():
                 else:
                     balance -= amount
             
-            csv_rows = []
-            with open(filename, "r") as csv_file:
-                reader = csv.DictReader(csv_file, fieldnames=field_names)
-                for row in reader:
-                    if row["account_nr"] == ac_nr:
-                        row["balance"] = balance
-                    csv_rows.append(row)
-            
-            with open(filename, "w") as csv_file:
-                writer = csv.DictWriter(csv_file, fieldnames=field_names)
-                for row in csv_rows:
-                    writer.writerow(row)
+            update_balance(account_nr, balance)
 
         except KeyboardInterrupt:
             print("Exiting application!")
