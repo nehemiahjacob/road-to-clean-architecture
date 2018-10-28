@@ -36,10 +36,13 @@ class AccountManager:
             elif message == constants.BALANCE_INCREASED:
                 pass
             else:
-                raise Exception("Unknown state!")
+                raise Exception("Unknown deposit state!")
             return new_balance
         elif option == 2:
             new_balance, message = withdraw(balance, amount)
             if message == constants.NOT_ENOUGH_MONEY:
                 self.presenter.notify_overdraw_not_allowed()
-            return new_balance
+            else if message == constants.BALANCE_DECREASED:
+                return new_balance
+            else:
+                raise Exception("Unknown withdraw state!")
