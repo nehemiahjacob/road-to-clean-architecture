@@ -4,8 +4,7 @@ def main():
     storage_svc = factory.create_storage()
     account_nr = input("Please give an account nr to create a new account: ")
 
-    initial_balance = 0
-    storage_svc.create_account(account_nr, initial_balance)
+    storage_svc.create_account(account_nr, initial_balance=0)
 
     while True:
         try:

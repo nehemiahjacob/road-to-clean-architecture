@@ -15,7 +15,7 @@ class StorageCSV:
             if not file_exists:
                 writer.writeheader()
 
-    def create_account(self, account_nr, balance):
+    def create_account(self, account_nr, initial_balance):
         with open(self.filename, "r") as csv_file:
             reader = csv.DictReader(csv_file, fieldnames=self.field_names)
 
@@ -29,7 +29,7 @@ class StorageCSV:
             writer.writerow({
                 "account_nr": account_nr,
                 "date_opened": date.today(),
-                "balance": balance
+                "balance": initial_balance
             })
 
     def update_balance(self, account_nr, balance):
