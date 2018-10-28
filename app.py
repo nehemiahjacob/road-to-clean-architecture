@@ -1,16 +1,7 @@
-from infrastructure.persistence import StorageCSV, DatabaseStorage
-from config import environment
-
-def create_storage():
-    if environment == "production":
-        conn_str = "some connstring"
-        return DatabaseStorage(conn_str)
-    else:
-        filename = "accounts.csv"
-        return StorageCSV(filename)
+import factory
 
 def main():
-    storage_svc = create_storage()
+    storage_svc = factory.create_storage()
     account_nr = input("Please give an account nr to create a new account: ")
 
     initial_balance = 0
