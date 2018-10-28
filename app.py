@@ -1,8 +1,10 @@
 def main():
+    ac_nr = input("Please give an account nr to create a new account: ")
     balance = 0
 
     while True:
-        print("Your current balance is ${}".format(balance))
+        print("")
+        print("Your current balance for #{} is ${}".format(ac_nr, balance))
         print("1) Deposit money into account")
         print("2) Withdraw money from account")
         opt = int(input("Choose option: "))
