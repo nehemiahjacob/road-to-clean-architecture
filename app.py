@@ -1,5 +1,20 @@
+from datetime import date
+import csv
+
 def main():
     ac_nr = input("Please give an account nr to create a new account: ")
+
+    with open("accounts.csv", "r") as csv_file:
+        # check if account already exists
+        pass
+
+    with open("accounts.csv", "a") as csv_file:
+        field_names = ["account_nr", "date_opened", "balance"]
+        writer = csv.DictWriter(csv_file, fieldnames=field_names)
+
+        writer.writeheader()
+        writer.writerow({"account_nr": ac_nr, "date_opened": date.today(), "balance": 0})
+
     balance = 0
 
     while True:
