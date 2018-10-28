@@ -1,4 +1,5 @@
 from domain.models import deposit, withdraw
+from domain import constants
 
 def validate(option, amount):
     if option not in (1, 2):
@@ -27,18 +28,18 @@ class AccountManager:
     
     def _perform_transaction(self, balance, option, amount):
         if option == 1:
-            new_balance, change = deposit(balance, amount)
-            if change == amount:
+            new_balance, change, message = deposit(balance, amount)
+            if message == constants.DEPOSIT_NOT_ALLOWED:
                 self.presenter.notify_no_more_deposits_allowed(change)
-            elif 0 < change < amount:
+            elif message == constants.ACCOUNT_LIMIT_REACHED:
                 self.presenter.notify_account_limit_reached(change)
-            elif change == 0:
+            elif message == constants.BALANCE_INCREASED:
                 pass
             else:
                 raise Exception("Unknown state!")
             return new_balance
         elif option == 2:
-            new_balance = withdraw(balance, amount)
-            if new_balance == balance:
+            new_balance, message = withdraw(balance, amount)
+            if message == constants.NOT_ENOUGH_MONEY:
                 self.presenter.notify_overdraw_not_allowed()
             return new_balance
