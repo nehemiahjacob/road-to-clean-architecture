@@ -14,7 +14,7 @@ def main():
             option = int(input("Choose option: "))
             amount = int(input("Choose amount: "))
 
-            use_case.process(account_nr, option, amount)
+            invoice = use_case.process(account_nr, option, amount)
         except KeyboardInterrupt:
             print("Exiting application!")
             break

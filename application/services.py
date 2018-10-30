@@ -23,26 +23,28 @@ class AccountManager:
     def process(self, account_nr, option, amount):
         validate(option, amount)
         balance = self.storage_svc.get_balance(account_nr)
-        new_balance = self._perform_transaction(balance, option, amount)
-        self.storage_svc.update_balance(account_nr, new_balance)
+        invoice = self._perform_transaction(balance, option, amount)
+        self.storage_svc.update_balance(account_nr, invoice.current_balance)
+        return invoice
     
     def _perform_transaction(self, balance, option, amount):
         if option == 1:
-            new_balance, change, message = deposit(balance, amount)
-            if message == constants.DEPOSIT_NOT_ALLOWED:
-                self.presenter.notify_no_more_deposits_allowed(change)
-            elif message == constants.ACCOUNT_LIMIT_REACHED:
-                self.presenter.notify_account_limit_reached(change)
-            elif message == constants.BALANCE_INCREASED:
+            invoice = deposit(balance, amount)
+            if invoice.description == constants.DEPOSIT_NOT_ALLOWED:
+                self.presenter.notify_no_more_deposits_allowed(invoice.change)
+            elif invoice.description == constants.ACCOUNT_LIMIT_REACHED:
+                self.presenter.notify_account_limit_reached(invoice.change)
+            elif invoice.description == constants.BALANCE_INCREASED:
                 pass
             else:
                 raise Exception("Unknown deposit state!")
-            return new_balance
+            return invoice
         elif option == 2:
-            new_balance, message = withdraw(balance, amount)
-            if message == constants.NOT_ENOUGH_MONEY:
+            invoice = withdraw(balance, amount)
+            if invoice.description == constants.NOT_ENOUGH_MONEY:
                 self.presenter.notify_overdraw_not_allowed()
-            else if message == constants.BALANCE_DECREASED:
-                return new_balance
+            elif invoice.description == constants.BALANCE_DECREASED:
+                pass
             else:
                 raise Exception("Unknown withdraw state!")
+            return invoice
