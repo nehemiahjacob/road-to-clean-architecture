@@ -2,7 +2,7 @@ from domain.models import deposit, withdraw
 import constants
 
 def validate(option, amount):
-    if option not in (1, 2):
+    if option not in (constants.DEPOSIT_CHOSEN, constants.WITHDRAWAL_CHOSEN):
         raise ValueError("Not a valid option chosen!")
         
     if amount <= 0:
