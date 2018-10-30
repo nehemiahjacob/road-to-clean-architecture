@@ -1,5 +1,5 @@
 from domain.models import deposit, withdraw
-from domain import constants
+import constants
 
 def validate(option, amount):
     if option not in (1, 2):
@@ -25,26 +25,11 @@ class AccountManager:
         balance = self.storage_svc.get_balance(account_nr)
         invoice = self._perform_transaction(balance, option, amount)
         self.storage_svc.update_balance(account_nr, invoice.current_balance)
+        self.presenter.present(invoice)
         return invoice
     
     def _perform_transaction(self, balance, option, amount):
-        if option == 1:
-            invoice = deposit(balance, amount)
-            if invoice.description == constants.DEPOSIT_NOT_ALLOWED:
-                self.presenter.notify_no_more_deposits_allowed(invoice.change)
-            elif invoice.description == constants.ACCOUNT_LIMIT_REACHED:
-                self.presenter.notify_account_limit_reached(invoice.change)
-            elif invoice.description == constants.BALANCE_INCREASED:
-                pass
-            else:
-                raise Exception("Unknown deposit state!")
-            return invoice
-        elif option == 2:
-            invoice = withdraw(balance, amount)
-            if invoice.description == constants.NOT_ENOUGH_MONEY:
-                self.presenter.notify_overdraw_not_allowed()
-            elif invoice.description == constants.BALANCE_DECREASED:
-                pass
-            else:
-                raise Exception("Unknown withdraw state!")
-            return invoice
+        if option == constants.DEPOSIT_CHOSEN:
+            return deposit(balance, amount)
+        elif option == constants.WITHDRAWAL_CHOSEN:
+            return withdraw(balance, amount)

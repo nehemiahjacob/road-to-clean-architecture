@@ -4,3 +4,6 @@ ACCOUNT_LIMIT_REACHED = "account limit has been reached"
 BALANCE_INCREASED = "balance has gone up"
 BALANCE_DECREASED = "balance has gone down"
 NOT_ENOUGH_MONEY = "cannot withdraw more than balance"
+
+DEPOSIT_CHOSEN = 1
+WITHDRAWAL_CHOSEN = 2

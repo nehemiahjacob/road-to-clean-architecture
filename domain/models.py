@@ -1,6 +1,4 @@
-from .constants import (ACCOUNT_LIMIT, ACCOUNT_LIMIT_REACHED,
-                        BALANCE_DECREASED, BALANCE_INCREASED,
-                        DEPOSIT_NOT_ALLOWED, NOT_ENOUGH_MONEY)
+import constants
 
 class DepositInvoice:
     def __init__(self, current_balance, change, description):
@@ -15,21 +13,21 @@ class WithdrawalInvoice:
         self.description = description
 
 def deposit(balance, amount):
-    if balance >= ACCOUNT_LIMIT:
-        return DepositInvoice(balance, amount, DEPOSIT_NOT_ALLOWED)
-    elif balance + amount > ACCOUNT_LIMIT:
-        difference = ACCOUNT_LIMIT - balance
+    if balance >= constants.ACCOUNT_LIMIT:
+        return DepositInvoice(balance, amount, constants.DEPOSIT_NOT_ALLOWED)
+    elif balance + amount > constants.ACCOUNT_LIMIT:
+        difference = constants.ACCOUNT_LIMIT - balance
         assert(difference <= amount)
-        balance = ACCOUNT_LIMIT
+        balance = constants.ACCOUNT_LIMIT
         change = amount - difference
-        return DepositInvoice(balance, change, ACCOUNT_LIMIT_REACHED)
+        return DepositInvoice(balance, change, constants.ACCOUNT_LIMIT_REACHED)
     else:
         balance += amount
-        return DepositInvoice(balance, 0, BALANCE_INCREASED)
+        return DepositInvoice(balance, 0, constants.BALANCE_INCREASED)
     return balance
 
 def withdraw(balance, amount):
     if balance - amount < 0:
-        return WithdrawalInvoice(balance, 0, NOT_ENOUGH_MONEY)
+        return WithdrawalInvoice(balance, 0, constants.NOT_ENOUGH_MONEY)
     else:
-        return WithdrawalInvoice(balance - amount, amount, BALANCE_DECREASED)
+        return WithdrawalInvoice(balance - amount, amount, constants.BALANCE_DECREASED)
