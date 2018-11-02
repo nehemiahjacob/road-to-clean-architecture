@@ -13,3 +13,6 @@ class DatabaseStorage:
     def get_balance(self, account_nr):
         # to implement with production DB
         return 49
+
+    def get_all_accounts(self):
+        return []

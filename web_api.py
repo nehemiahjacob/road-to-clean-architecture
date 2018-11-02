@@ -69,15 +69,21 @@ class MyMutations(graphene.ObjectType):
     create_deposit = CreateDeposit.Field()
     create_withdrawal = CreateWithdrawal.Field()
 
-class Query(graphene.ObjectType):
-    accounts = graphene.String(account_nr=graphene.String())
+class AccountsQL(graphene.ObjectType):
+    date_opened = graphene.Date(required=True)
+    account_nr = graphene.String(required=True)
+    balance = graphene.Int(required=True)
 
-    def resolve_accounts(self, info, account_nr):
-        balance = use_case.show_balance_and_options(account_nr)
-        return {
-            "account_nr": account_nr,
-            "balance": balance
-        }
+class Query(graphene.ObjectType):
+    accounts = graphene.List(AccountsQL)
+
+    def resolve_accounts(self, info):
+        accounts_ql = map(lambda ac: AccountsQL(
+            date_opened=ac.date_opened,
+            account_nr=ac.account_nr,
+            balance=ac.balance
+        ), storage_svc.get_all_accounts())
+        return list(accounts_ql)
 
 schema = graphene.Schema(query=Query, mutation=MyMutations)
 view = responder.ext.GraphQLView(api=api, schema=schema)

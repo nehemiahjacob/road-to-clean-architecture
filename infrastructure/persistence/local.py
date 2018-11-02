@@ -1,6 +1,12 @@
 import csv
 import os
-from datetime import date
+from datetime import date, datetime
+
+class AccountDTO:
+    def __init__(self, date_opened, account_nr, balance):
+        self.date_opened = date_opened
+        self.account_nr = account_nr
+        self.balance = balance
 
 class StorageCSV:
     def __init__(self, filename):
@@ -55,3 +61,17 @@ class StorageCSV:
                 if row["account_nr"] == account_nr:
                     balance = row["balance"]
                     return int(balance)
+
+    def get_all_accounts(self):
+        with open(self.filename, "r") as csv_file:
+            reader = csv.DictReader(csv_file, fieldnames=self.field_names)
+
+            # skip first row, which is the header
+            next(reader)
+
+            accounts = map(lambda row: AccountDTO(
+                date_opened=datetime.strptime(row["date_opened"], "%Y-%M-%d").date(),
+                account_nr=row["account_nr"],
+                balance=row["balance"]
+            ), reader)
+            return list(accounts)
