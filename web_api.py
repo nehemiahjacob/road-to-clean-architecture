@@ -1,9 +1,10 @@
-import responder
 import graphene
-from factory import create_account_management_use_case
-from application.requests import DepositMoney, WithdrawMoney
+import responder
+from domain.models import deposit, withdraw
+from factory import create_presenter, create_storage
 
-use_case = create_account_management_use_case()
+storage_svc = create_storage()
+presenter = create_presenter()
 api = responder.API()
 
 class DepositInvoiceQL(graphene.ObjectType):
@@ -20,8 +21,14 @@ class CreateDeposit(graphene.Mutation):
     invoice = graphene.Field(lambda: DepositInvoiceQL)
     
     def mutate(self, info, account_nr, amount):
-        request_obj = DepositMoney(account_nr, amount)
-        fact = use_case.process(request_obj)
+        if amount <= 0:
+            raise ValueError("Must provide amount above $0!")
+        
+        balance = storage_svc.get_balance(account_nr)
+        fact = deposit(balance, amount)
+        storage_svc.update_balance(account_nr, fact.current_balance)
+        presenter.present(fact)
+
         invoice = DepositInvoiceQL(
             updated_balance=fact.current_balance,
             change=fact.change,
@@ -43,8 +50,14 @@ class CreateWithdrawal(graphene.Mutation):
     invoice = graphene.Field(lambda: WithdrawalInvoiceQL)
 
     def mutate(self, info, account_nr, amount):
-        request_obj = WithdrawMoney(account_nr, amount)
-        fact = use_case.process(request_obj)
+        if amount <= 0:
+            raise ValueError("Must provide amount above $0!")
+
+        balance = storage_svc.get_balance(account_nr)
+        fact = withdraw(balance, amount)
+        storage_svc.update_balance(account_nr, fact.current_balance)
+        presenter.present(fact)
+
         invoice = WithdrawalInvoiceQL(
             updated_balance=fact.current_balance,
             amount_withdrawn=fact.amount_withdrawn,
