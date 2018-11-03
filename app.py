@@ -1,35 +1,30 @@
 import factory
 from constants import DEPOSIT_CHOSEN, WITHDRAWAL_CHOSEN
+from application.requests import Deposit, Withdraw
 
-def process_transaction(account):
+def choose_transaction(account_nr):
     option = int(input("Choose option: "))
     amount = int(input("Choose amount: "))
 
     if option == DEPOSIT_CHOSEN:
-        return account.deposit(amount)
+        return Deposit(account_nr, amount)
     elif option == WITHDRAWAL_CHOSEN:
-        return account.withdraw(amount)
+        return Withdraw(account_nr, amount)
     else:
         raise ValueError("Unknown option selected!")
 
 def main():
-    presenter = factory.create_presenter()
-    storage_svc = factory.create_storage()
+    use_case = factory.create_account_management_use_case()
     
     account_nr = input("Please give an account nr to create a new account: ")
 
-    storage_svc.create_account(account_nr, initial_balance=0)
+    use_case.create_account(account_nr)
 
     while True:
         try:
-            account = storage_svc.get_account_by_id(account_nr)
-            presenter.display_options(account)
-
-            invoice = process_transaction(account)
-
-            storage_svc.update_account(account)
-            presenter.present(invoice)
-
+            use_case.present_transaction_options(account_nr)
+            transaction = choose_transaction(account_nr)
+            use_case.process_transaction(transaction)
         except KeyboardInterrupt:
             print("Exiting application!")
             break
