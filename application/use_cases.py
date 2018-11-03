@@ -12,6 +12,9 @@ class AccountManagementUseCase:
         account = self.storage_svc.get_account_by_id(account_nr)
         self.presenter.display_options(account)
 
+    def get_all_accounts(self):
+        return self.storage_svc.get_all_accounts()
+
     def process_transaction(self, request_obj):
         if request_obj.__class__ == Deposit:
             return self._handle_deposit(request_obj)

@@ -1,9 +1,9 @@
 import graphene
 import responder
-from factory import create_presenter, create_storage
+from application.requests import Deposit, Withdraw
+from factory import create_account_management_use_case
 
-storage_svc = create_storage()
-presenter = create_presenter()
+use_case = create_account_management_use_case()
 api = responder.API()
 
 class DepositInvoiceQL(graphene.ObjectType):
@@ -20,10 +20,8 @@ class CreateDeposit(graphene.Mutation):
     invoice = graphene.Field(lambda: DepositInvoiceQL)
     
     def mutate(self, info, account_nr, amount):
-        account = storage_svc.get_account_by_id(account_nr)
-        fact = account.deposit(amount)
-        storage_svc.update_account(account)
-        presenter.present(fact)
+        transaction = Deposit(account_nr, amount)
+        fact = use_case.process_transaction(transaction)
 
         invoice = DepositInvoiceQL(
             updated_balance=fact.current_balance,
@@ -46,10 +44,8 @@ class CreateWithdrawal(graphene.Mutation):
     invoice = graphene.Field(lambda: WithdrawalInvoiceQL)
 
     def mutate(self, info, account_nr, amount):
-        account = storage_svc.get_account_by_id(account_nr)
-        fact = account.withdraw(amount)
-        storage_svc.update_account(account)
-        presenter.present(fact)
+        transaction = Withdraw(account_nr, amount)
+        fact = use_case.process_transaction(transaction)
 
         invoice = WithdrawalInvoiceQL(
             updated_balance=fact.current_balance,
@@ -75,7 +71,7 @@ class Query(graphene.ObjectType):
             date_opened=ac.date_opened,
             account_nr=ac.account_nr,
             balance=ac.balance
-        ), storage_svc.get_all_accounts())
+        ), use_case.get_all_accounts())
         return list(accounts_ql)
 
 schema = graphene.Schema(query=Query, mutation=MyMutations)
