@@ -1,7 +1,6 @@
 import csv
 import os
 from datetime import date, datetime
-from domain.models import Account
 
 class AccountDTO:
     def __init__(self, date_opened, account_nr, balance):
@@ -39,31 +38,29 @@ class StorageCSV:
                 "balance": initial_balance
             })
 
-        return Account(account_nr, initial_balance)
-
-    def update_account(self, account):
-        assert(account.balance >= 0)
+    def update_balance(self, account_nr, balance):
+        assert(balance >= 0)
         csv_rows = []
         with open(self.filename, "r") as csv_file:
             reader = csv.DictReader(csv_file, fieldnames=self.field_names)
             for row in reader:
-                if row["account_nr"] == account.account_nr:
-                    row["balance"] = account.balance
+                if row["account_nr"] == account_nr:
+                    row["balance"] = balance
                 csv_rows.append(row)
         
         with open(self.filename, "w") as csv_file:
             writer = csv.DictWriter(csv_file, fieldnames=self.field_names)
             for row in csv_rows:
                 writer.writerow(row)
-    
-    def get_account_by_id(self, account_nr):
+
+    def get_balance(self, account_nr):
         with open(self.filename, "r") as csv_file:
             reader = csv.DictReader(csv_file, fieldnames=self.field_names)
 
             for row in reader:
                 if row["account_nr"] == account_nr:
                     balance = row["balance"]
-                    return Account(account_nr, int(balance))
+                    return int(balance)
 
     def get_all_accounts(self):
         with open(self.filename, "r") as csv_file:

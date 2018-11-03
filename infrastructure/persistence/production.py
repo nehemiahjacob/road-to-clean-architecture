@@ -1,20 +1,18 @@
-from domain.models import Account
-
 class DatabaseStorage:
     def __init__(self, conn_str):
         self.conn_str = conn_str
 
     def create_account(self, account_nr, initial_balance):
         # to implement with production DB
-        return Account(account_nr, initial_balance)
+        pass
 
-    def update_account(self, account):
+    def update_balance(self, account_nr, balance):
         # to implement with production DB
         pass
 
-    def get_account_by_id(self, account_nr):
+    def get_balance(self, account_nr):
         # to implement with production DB
-        return Account("1234", 49)
+        return 49
 
     def get_all_accounts(self):
         return []
