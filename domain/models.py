@@ -42,4 +42,4 @@ class Account:
             return WithdrawalInvoice(self.balance, 0, constants.NOT_ENOUGH_MONEY)
         else:
             self.balance -= amount
-            return WithdrawalInvoice(self.balance - amount, amount, constants.BALANCE_DECREASED)
+            return WithdrawalInvoice(self.balance, amount, constants.BALANCE_DECREASED)
