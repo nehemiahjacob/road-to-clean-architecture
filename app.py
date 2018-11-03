@@ -1,18 +1,14 @@
 import factory
 from constants import DEPOSIT_CHOSEN, WITHDRAWAL_CHOSEN
-from domain.models import deposit, withdraw
 
-def process_transaction(account_nr, balance):
+def process_transaction(account):
     option = int(input("Choose option: "))
     amount = int(input("Choose amount: "))
 
-    if amount <= 0:
-        raise ValueError("Must provide amount above $0!")
-
     if option == DEPOSIT_CHOSEN:
-        return deposit(balance, amount)
+        return account.deposit(amount)
     elif option == WITHDRAWAL_CHOSEN:
-        return withdraw(balance, amount)
+        return account.withdraw(amount)
     else:
         raise ValueError("Unknown option selected!")
 
@@ -26,12 +22,12 @@ def main():
 
     while True:
         try:
-            balance = storage_svc.get_balance(account_nr)
-            presenter.display_options(account_nr, balance)
+            account = storage_svc.get_account_by_id(account_nr)
+            presenter.display_options(account)
 
-            invoice = process_transaction(account_nr, balance)
+            invoice = process_transaction(account)
 
-            storage_svc.update_balance(account_nr, invoice.current_balance)
+            storage_svc.update_account(account)
             presenter.present(invoice)
 
         except KeyboardInterrupt:
