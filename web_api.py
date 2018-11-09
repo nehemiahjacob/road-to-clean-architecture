@@ -1,9 +1,9 @@
 import graphene
 import responder
 from application.requests import Deposit, Withdraw
-from factory import create_account_management_use_case
+from application.use_cases import AccountManagementUseCase
 
-use_case = create_account_management_use_case()
+use_case = AccountManagementUseCase()
 api = responder.API()
 
 class DepositInvoiceQL(graphene.ObjectType):

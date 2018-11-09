@@ -1,6 +1,7 @@
 import factory
 from constants import DEPOSIT_CHOSEN, WITHDRAWAL_CHOSEN
 from application.requests import Deposit, Withdraw
+from application.use_cases import AccountManagementUseCase
 
 def choose_transaction(account_nr):
     option = int(input("Choose option: "))
@@ -14,7 +15,7 @@ def choose_transaction(account_nr):
         raise ValueError("Unknown option selected!")
 
 def main():
-    use_case = factory.create_account_management_use_case()
+    use_case = AccountManagementUseCase()
     
     account_nr = input("Please give an account nr to create a new account: ")
 
