@@ -1,3 +1,4 @@
+from application.use_cases import AccountManagementUseCase
 from config import environment
 from infrastructure.persistence import DatabaseStorage, StorageCSV
 from infrastructure.presentation import ConsolePresenter
@@ -16,3 +17,8 @@ def create_presenter():
         raise NotImplementedError()
     else:
         return ConsolePresenter()
+
+def create_account_management_use_case():
+    storage_svc = create_storage()
+    presenter = create_presenter()
+    return AccountManagementUseCase(storage_svc, presenter)

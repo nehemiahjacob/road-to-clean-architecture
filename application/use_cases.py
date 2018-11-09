@@ -1,10 +1,9 @@
 from .requests import Deposit, Withdraw
-import factory
 
 class AccountManagementUseCase:
-    def __init__(self):
-        self.storage_svc = factory.create_storage()
-        self.presenter = factory.create_presenter()
+    def __init__(self, storage_svc, presenter):
+        self.storage_svc = storage_svc
+        self.presenter = presenter
 
     def create_account(self, account_nr):
         return self.storage_svc.create_account(account_nr, initial_balance=0)
